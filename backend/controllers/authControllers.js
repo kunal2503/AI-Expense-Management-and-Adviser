@@ -1,5 +1,6 @@
 const User = require("../model/user");
 const bcrypt = require("bcrypt");
+const 
 
 const signup = async (req,res) => {
     try {
@@ -36,6 +37,10 @@ const signin = async (req,res) => {
         const userAlreadyExists = await User.findOne({email});
         if(!userAlreadyExists){
             return res.status(404).json({message : "User not found"});
+        }
+        const isPasswordCorrect = await bcrypt.compare(password, userAlreadyExists.password);
+        if(!isPasswordCorrect){
+            return res.status(400).json({message : "Invalid credentials"});
         }
 
     } catch(error){
