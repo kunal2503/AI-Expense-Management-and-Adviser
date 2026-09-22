@@ -1,4 +1,6 @@
 import { useState} from "react";
+import axiosInstance from "../../utils/axiosInstance";
+import {useNavigate} from "react-router";
 
 const Signup = () => {
   const [userData, setUserData] = useState({
@@ -6,6 +8,7 @@ const Signup = () => {
     email: "",
     password: ""
   });
+  const navigate = useNavigate();
 
   const handleInputChanges = (e) => {
     setUserData({
@@ -14,10 +17,15 @@ const Signup = () => {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     try {
       e.preventDefault();
-      console.log("User Data", userData);
+      const response = await axiosInstance.post("/auth/signup",userData);
+      if(response.status === 201){
+        navigate("/dashboard");
+        // toast.success("Signup successful!");
+      }
+       localStorage.setItem("token", response.data.token);
     } catch(error){
       console.log("Error while signing up: ", error);
     }

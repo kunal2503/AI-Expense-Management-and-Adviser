@@ -1,10 +1,14 @@
 import {useState} from "react";
+import axiosInstance from "../../utils/axiosInstance";
+// import { useNavigate } from "react-router";
+// import toast from "react-toastify";
 
 const Signin = () => {
   const [userInfo, setUserInfo]  = useState({
     email : "",
     password : ""
   });
+  // const navigate = useNavigate();
 
   const handleInputChanges = (e) =>{
     setUserInfo({
@@ -13,10 +17,15 @@ const Signin = () => {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     try{  
       e.preventDefault();
-      console.log(userInfo)
+      const response = await axiosInstance.post("/auth/signin", userInfo);
+      if(response.status === 200){
+        // navigate("/dashboard");
+        // toast.success("Login successful!");
+      }
+        // toast.error("Invalid credentials");
     } catch(error){
       console.log("Error while Login : ", error);
     }
