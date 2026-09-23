@@ -1,6 +1,7 @@
 import { useState} from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import {useNavigate} from "react-router";
+import toast from "react-hot-toast";
 
 const Signup = () => {
   const [userData, setUserData] = useState({
@@ -23,11 +24,12 @@ const Signup = () => {
       const response = await axiosInstance.post("/auth/signup",userData);
       if(response.status === 201){
         navigate("/dashboard");
-        // toast.success("Signup successful!");
+        localStorage.setItem("token", response.data.token);
+        toast.success("Signup successful!");
       }
-       localStorage.setItem("token", response.data.token);
     } catch(error){
       console.log("Error while signing up: ", error);
+      toast.error("Error while signing up");
     }
   }
   

@@ -5,13 +5,11 @@ const jwt = require("jsonwebtoken");
 const signup = async (req,res) => {
     try {
         const {username, email, password} = req.body;
-        // console.log("Signup request body: ", req.body);
         if(!username || !email || !password){
             return res.status(400).json({message : "Please fill all the fields"});
         }
         const userExists = await User.findOne({email})
         if(userExists){
-            console.log(userExists);
             return res.status(400).json({message : "User already exists"});
         }
         const salt = await bcrypt.genSalt(10);
@@ -22,10 +20,9 @@ const signup = async (req,res) => {
             email : email,
             password : hashedPassword
         })
-        console.log("New user created: ", newUser);
         await newUser.save();
 
-        const token = await jwt.sign({id: newUser._id}, process.env.JWT_SECRET, {expiresIn: "1h"});
+        const token = await jwt.sign({id: newUser._id}, "kunal", {expiresIn: "1h"});
         res.status(201).json({token : token});
     } catch(error){
         console.log(error);
@@ -47,11 +44,10 @@ const signin = async (req,res) => {
         if(!isPasswordCorrect){
             return res.status(400).json({message : "Invalid credentials"});
         }
-
-
-        const token = await jwt.sign({id: userAlreadyExists._id}, process.env.JWT_SECRET, {expiresIn: "1h"});
+        const token = await jwt.sign({id: userAlreadyExists._id}, "kunal", {expiresIn: "1h"});
         res.status(200).json({token : token});
     } catch(error){
+        console.log(error);
         res.status(500).json({message : "Something went wrong"});
     }
 }
