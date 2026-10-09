@@ -7,7 +7,8 @@ function SpendingChart({ expenses, period, onPeriodChange }) {
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
   const chartData = useMemo(() => {
     const days = Array.from({ length: 7 }, (_, index) => {
-      const date = new Date(todayStart + (index - 6) * 24 * 60 * 60 * 1000);
+      const date = new Date(todayStart);
+      date.setDate(date.getDate() - 6 + index);
       const total = expenses
         .filter((expense) => new Date(expense.date).toDateString() === date.toDateString())
         .reduce((sum, expense) => sum + Number(expense.amount), 0);

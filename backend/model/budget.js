@@ -7,6 +7,11 @@ const budgetSchema = new mongoose.Schema({
         required : true,
         min :0
     },
+    budgetType : {
+        type : String,
+        required : true,
+        enum : ["Monthly", "Yearly", "Weekly"]
+    },
     user : {
         type : mongoose.Schema.Types.ObjectId,
         required : true,
