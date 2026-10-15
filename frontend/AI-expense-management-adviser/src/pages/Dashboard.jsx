@@ -2,20 +2,15 @@ import { useMemo, useState } from "react";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import ExpenseDialog from "../components/dashboard/ExpenseDialog"
+import MetricCards from "../components/dashboard/MetricCards";
 
 
 function Dashboard() {
   const [monthlyBudget, setMonthlyBudget] = useState(0);
   const [showExpenseDialog, setShowExpenseDialog] = useState(false);
 
-  const addExpense = (expense) => {
 
-  }
-
-  const handleExpenseDialog = () => {
-    console.log(showExpenseDialog)
-    setShowExpenseDialog(!showExpenseDialog);
-  }
+  
   return (
     <div className="min-h-screen bg-[#f7f8fc] text-slate-900 lg:flex">
       <DashboardSidebar />
@@ -32,21 +27,23 @@ function Dashboard() {
             </div>
             <button
               type="button"
-              onClick={handleExpenseDialog}
+              onClick={() => setShowExpenseDialog(true)}
               className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition hover:-translate-y-0.5 hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200"
             >
               <span className="text-lg leading-none">+</span> Add expense
             </button>
           </section>
-          <ExpenseDialog onClose={handleExpenseDialog} onSave={addExpense} />
-          {/* <MetricCards
-            availableBalance={Math.max(savings, 0)}
-            monthlyTotal={monthlyTotal}
-            previousTotal={previousTotal}
-            savings={savings}
-            budget={budget}
-            budgetPercent={budgetPercent}
-          /> */}
+          {showExpenseDialog &&
+            <ExpenseDialog onClose={() => setShowExpenseDialog(false)}  />
+          }
+          <MetricCards
+            // availableBalance={Math.max(savings, 0)}
+            // monthlyTotal={monthlyTotal}
+            // previousTotal={previousTotal}
+            // savings={savings}
+            // budget={budget}
+            // budgetPercent={budgetPercent}
+          />
 
           <section className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.65fr)_minmax(300px,0.85fr)]">
             {/* <SpendingChart expenses={} period={} onPeriodChange={} />

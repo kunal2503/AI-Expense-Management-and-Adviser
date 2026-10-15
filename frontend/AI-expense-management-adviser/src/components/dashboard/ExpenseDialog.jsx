@@ -3,13 +3,9 @@ import { Plus, X } from "lucide-react";
 import { categories } from "./dashboardData";
 
 function ExpenseDialog({ onClose, onSave }) {
-  const [form, setForm] = useState({
-    name: "",
-    amount: "",
-    category: "Food",
-    note: "",
-  });
+  
   useEffect(() => {
+    console.log(onClose)
     const handleKeyDown = (event) => {
       if (event.key === "Escape") onClose();
     };
@@ -17,20 +13,16 @@ function ExpenseDialog({ onClose, onSave }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (!form.name.trim() || Number(form.amount) <= 0) return;
-    onSave({ ...form, name: form.name.trim(), note: form.note.trim() });
-  };
+  
   const inputClass =
     "mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100";
 
   return (
     <div
       className="fixed inset-0 z-40 grid place-items-center overflow-y-auto bg-slate-950/40 p-4 backdrop-blur-sm"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
+      // onMouseDown={(event) => {
+        // if (event.target === event.currentTarget) onClose();
+      // }}
     >
       <section
         role="dialog"
@@ -62,15 +54,15 @@ function ExpenseDialog({ onClose, onSave }) {
             <X size={18} />
           </button>
         </div>
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form  className="mt-6 space-y-4">
           <label className="block text-xs font-semibold text-slate-600">
             What was it for?
             <input
               autoFocus
-              value={form.name}
-              onChange={(event) =>
-                setForm({ ...form, name: event.target.value })
-              }
+              // value={form.name}
+              // onChange={(event) =>
+                // setForm({ ...form, name: event.target.value })
+              // }
               className={inputClass}
               placeholder="e.g. Lunch with Sam"
               maxLength={70}
@@ -84,10 +76,10 @@ function ExpenseDialog({ onClose, onSave }) {
                 type="number"
                 min="0.01"
                 step="0.01"
-                value={form.amount}
-                onChange={(event) =>
-                  setForm({ ...form, amount: event.target.value })
-                }
+                // value={form.amount}
+                // onChange={(event) =>
+                //   setForm({ ...form, amount: event.target.value })
+                // }
                 className={inputClass}
                 placeholder="0.00"
                 required
@@ -96,25 +88,25 @@ function ExpenseDialog({ onClose, onSave }) {
             <label className="block text-xs font-semibold text-slate-600">
               Category
               <select
-                value={form.category}
-                onChange={(event) =>
-                  setForm({ ...form, category: event.target.value })
-                }
+                // value={form.category}
+                // onChange={(event) =>
+                //   setForm({ ...form, category: event.target.value })
+                // }
                 className={inputClass}
               >
-                {categories.map(({ name }) => (
+                {/* {catgories.map(({ name }) => (
                   <option key={name}>{name}</option>
-                ))}
+                ))} */}
               </select>
             </label>
           </div>
           <label className="block text-xs font-semibold text-slate-600">
             A note <span className="font-normal text-slate-400">Optional</span>
             <input
-              value={form.note}
-              onChange={(event) =>
-                setForm({ ...form, note: event.target.value })
-              }
+              // value={form.note}
+              // onChange={(event) =>
+              //   setForm({ ...form, note: event.target.value })
+              // }
               className={inputClass}
               placeholder="Add a detail to remember"
               maxLength={100}
