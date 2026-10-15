@@ -1,7 +1,9 @@
 const express = require("express");
 const cors = require("cors");
-const authRoutes = require("./routes/authRoutes");
 const connectDB = require("./DB/connnectDB");
+const authRoutes = require("./routes/authRoutes");
+const expenseRoutes =  require("./routes/expenseRoutes");
+const budgetRoutes = require("./routes/budgetRoute");
 
 const app = express();
 
@@ -13,6 +15,8 @@ connectDB();
 app.use(cors());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/expense",expenseRoutes);
+app.use("/api/budget",budgetRoutes);
 
 app.get("/", (req,res) => {
     console.log("Hello World");

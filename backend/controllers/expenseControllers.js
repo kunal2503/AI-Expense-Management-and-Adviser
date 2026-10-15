@@ -22,7 +22,7 @@ const createExpense = async (req, res) =>{
     }
 }
 
-const getExpenses = async (req,res) =>{
+const getExpense = async (req,res) =>{
     try{    
         const { userId } = req.params;
         if(!userId){
@@ -55,3 +55,15 @@ const deleteExpense =  async (req, res) => {
         res.status(500).json({message  :"Internal Server Error", error : error});
     }
 }
+
+const editExpense = async(req,res)=>{
+    try{
+        
+    } catch(error){
+        console.log(error);
+        res.status(500).json({message : "Internal server error"});
+    }
+}
+
+
+module.exports = {createExpense, getExpense, deleteExpense, editExpense};
