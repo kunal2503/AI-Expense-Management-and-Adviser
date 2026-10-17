@@ -1,12 +1,29 @@
-import { useMemo } from "react";
 import { ChevronDown, Sparkles } from "lucide-react";
 import { currency } from "./dashboardData";
 
 function SpendingChart({ expenses, period, onPeriodChange }) {
   const today = new Date();
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
-  const chartData = useMemo(() => {
-    const days = Array.from({ length: 7 }, (_, index) => {
+  const chartData = period === "This month"
+    ? Array.from({ length: Math.ceil(new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate() / 7) }, (_, index) => {
+      const startDay = index * 7 + 1;
+      const endDay = Math.min(startDay + 6, new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate());
+      const total = expenses
+        .filter((expense) => {
+          const date = new Date(expense.date);
+          return date.getFullYear() === today.getFullYear()
+            && date.getMonth() === today.getMonth()
+            && date.getDate() >= startDay
+            && date.getDate() <= endDay;
+        })
+        .reduce((sum, expense) => sum + Number(expense.amount), 0);
+      return {
+        label: `Week ${index + 1}`,
+        dateLabel: `${today.toLocaleDateString([], { month: "short" })} ${startDay}–${endDay}`,
+        total,
+      };
+    })
+    : Array.from({ length: 7 }, (_, index) => {
       const date = new Date(todayStart);
       date.setDate(date.getDate() - 6 + index);
       const total = expenses
@@ -18,19 +35,9 @@ function SpendingChart({ expenses, period, onPeriodChange }) {
         total,
       };
     });
-    return days;
-  }, [expenses, todayStart]);
   const chartTotal = chartData.reduce((total, day) => total + day.total, 0);
   const maxValue = Math.max(...chartData.map(({ total }) => total), 50);
-  const highestDay = chartData.reduce((highest, day) => day.total > highest.total ? day : highest, chartData[0]);
-  const expenseSum = period === "This month"
-    ? expenses
-      .filter((expense) => {
-        const date = new Date(expense.date);
-        return date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
-      })
-      .reduce((total, expense) => total + Number(expense.amount), 0)
-    : chartTotal;
+  const highestPeriod = chartData.reduce((highest, day) => day.total > highest.total ? day : highest, chartData[0]);
 
   return (
     <article id="insights" className="scroll-mt-24 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
@@ -55,8 +62,8 @@ function SpendingChart({ expenses, period, onPeriodChange }) {
       </div>
 
       <div className="mt-6 flex items-end justify-between gap-3">
-        <div><p className="text-2xl font-semibold tracking-tight text-slate-950">{currency(expenseSum)}</p><p className="mt-1 text-xs text-slate-400">{period === "This month" ? "Spent this month" : "Spent in the last 7 days"}</p></div>
-        <span className="mb-1 inline-flex items-center gap-2 text-xs text-slate-500"><i className="size-2 rounded-full bg-indigo-500" />Daily spend</span>
+        <div><p className="text-2xl font-semibold tracking-tight text-slate-950">{currency(chartTotal)}</p><p className="mt-1 text-xs text-slate-400">{period === "This month" ? "Spent this month" : "Spent in the last 7 days"}</p></div>
+        <span className="mb-1 inline-flex items-center gap-2 text-xs text-slate-500"><i className="size-2 rounded-full bg-indigo-500" />{period === "This month" ? "Weekly spend" : "Daily spend"}</span>
       </div>
 
       <div className="mt-5 grid h-48 grid-cols-[32px_1fr] gap-3 sm:h-56">
@@ -68,7 +75,7 @@ function SpendingChart({ expenses, period, onPeriodChange }) {
             const height = day.total ? Math.max((day.total / maxValue) * 100, 5) : 0;
             return (
               <div key={day.dateLabel} className="flex h-full w-[11%] flex-col items-center justify-end">
-                <span title={`${day.dateLabel}: ${currency(day.total)}`} className={`w-full max-w-8 rounded-t-lg transition-all duration-300 hover:brightness-95 ${day === highestDay && day.total > 0 ? "bg-indigo-600" : "bg-indigo-200"}`} style={{ height: `${height}%` }} />
+                <span title={`${day.dateLabel}: ${currency(day.total)}`} className={`w-full max-w-8 rounded-t-lg transition-all duration-300 hover:brightness-95 ${day === highestPeriod && day.total > 0 ? "bg-indigo-600" : "bg-indigo-200"}`} style={{ height: `${height}%` }} />
                 <span className="mt-2 text-[10px] text-slate-400">{day.label}</span>
               </div>
             );
@@ -78,7 +85,7 @@ function SpendingChart({ expenses, period, onPeriodChange }) {
 
       <div className="mt-5 flex items-start gap-2.5 rounded-xl bg-indigo-50/80 px-3.5 py-3 text-xs leading-5 text-slate-600">
         <Sparkles size={15} className="mt-0.5 shrink-0 text-indigo-600" />
-        <p>{chartTotal > 0 ? <><strong className="font-semibold text-slate-800">{highestDay.label} is your biggest day</strong> this week at {currency(highestDay.total)}. Every little choice adds up.</> : "Add an expense to see your weekly spending rhythm take shape."}</p>
+        <p>{chartTotal > 0 ? <><strong className="font-semibold text-slate-800">{highestPeriod.label} is your biggest spending period</strong> at {currency(highestPeriod.total)}. Every little choice adds up.</> : `Add an expense to see your ${period === "This month" ? "monthly" : "weekly"} spending rhythm take shape.`}</p>
       </div>
     </article>
   );

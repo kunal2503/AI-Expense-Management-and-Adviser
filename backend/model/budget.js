@@ -28,4 +28,8 @@ const budgetSchema = new mongoose.Schema({
     }
 },{ timestamps : true});
 
+budgetSchema.index({ user: 1, budgetType: 1 }, { unique: true });
+
 const Budget = mongoose.model("Budget", budgetSchema);
+
+module.exports = Budget;

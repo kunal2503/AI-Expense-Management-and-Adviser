@@ -1,6 +1,6 @@
-import {useState} from "react";
+import { useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import toast from "react-hot-toast";
 
 const Signin = () => {
@@ -23,12 +23,12 @@ const Signin = () => {
       const response = await axiosInstance.post("/auth/signin", userInfo);
       if(response.status === 200){
         localStorage.setItem("token", response.data.token);
-        navigate("/dashboard");
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        navigate("/dashboard", { replace: true });
         toast.success("Login successful!");
       }
-        toast.error("Invalid credentials");
     } catch(error){
-      console.log("Error while Login : ", error);
+      toast.error(error.response?.data?.message || "Unable to sign in. Please try again.");
     }
   }
 
@@ -50,7 +50,7 @@ const Signin = () => {
         </form>
 
         <p className="mt-6 text-center text-sm text-[#667085]">
-          Don't have an account? <a href="/signup" className="font-semibold text-blue-600 no-underline">Sign up</a>
+        Don&apos;t have an account? <Link to="/signup" className="font-semibold text-blue-600 no-underline">Sign up</Link>
         </p>
       </div>
     </div>

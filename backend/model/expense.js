@@ -9,6 +9,8 @@ const expenseSchema = new mongoose.Schema({
     },
     description : {
         type : String,
+        trim: true,
+        maxlength: 100
     },
     category : {
         type : String,
@@ -34,4 +36,8 @@ const expenseSchema = new mongoose.Schema({
 
 }, { timestamps : true});
 
+expenseSchema.index({ user: 1, date: -1 });
+
 const Expense = mongoose.model("Expense", expenseSchema);
+
+module.exports = Expense;

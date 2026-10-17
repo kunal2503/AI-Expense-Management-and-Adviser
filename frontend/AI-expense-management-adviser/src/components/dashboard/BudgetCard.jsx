@@ -31,10 +31,12 @@ function BudgetCard({ monthlyTotal, remaining, budget, budgetPercent, onEdit }) 
 
       <div className="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4">
         <div><p className="flex items-center gap-1.5 text-[11px] text-slate-400"><i className="size-2 rounded-full bg-indigo-500" />Spent</p><p className="mt-1 text-sm font-semibold text-slate-800">{currency(monthlyTotal)}</p></div>
-        <div><p className="flex items-center gap-1.5 text-[11px] text-slate-400"><i className="size-2 rounded-full bg-slate-200" />Left</p><p className="mt-1 text-sm font-semibold text-slate-800">{currency(remaining)}</p></div>
+        <div><p className="flex items-center gap-1.5 text-[11px] text-slate-400"><i className="size-2 rounded-full bg-slate-200" />Left</p><p className="mt-1 text-sm font-semibold text-slate-800">{currency(Math.max(remaining, 0))}</p></div>
       </div>
       <div className={`mt-4 rounded-xl px-3.5 py-3 text-xs leading-5 ${isOverBudget ? "bg-orange-50 text-orange-800" : "bg-emerald-50 text-emerald-800"}`}>
-        {isOverBudget
+        {budget <= 0
+          ? "Set a monthly spending limit to keep your plans in view."
+          : isOverBudget
           ? `You’re ${currency(monthlyTotal - budget)} over your ${currency(budget)} monthly plan.`
           : `Looking good. You have ${currency(Math.max(budget - monthlyTotal, 0))} left in your plan.`}
       </div>

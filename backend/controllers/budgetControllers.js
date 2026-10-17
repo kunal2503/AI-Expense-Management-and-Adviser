@@ -1,99 +1,31 @@
 const Budget = require("../model/budget");
 
-
 const infoBudget = async (req, res) => {
-    try{
-        const budgetId = req.params.id;
-        if(!budgetId){
-            return res.status(400).json({message : "Please provide budget id"});
-        }
-        const budgetExists = await Budget.findById(budgetId);
-        if(!budgetExists){
-            return res.status(404).json({message : "Budget not Found"});
-        }
-        res.status(200).json({budget : budgetExists});
-    } catch(error){
-        console.log(error);
-        res.status(500).json({message : "Something went wrong"});
+    try {
+        const budget = await Budget.findOne({ user: req.user.id, budgetType: "Monthly" });
+        return res.status(200).json({ budget });
+    } catch (error) {
+        console.error("Loading budget failed:", error);
+        return res.status(500).json({ message: "Unable to load budget" });
     }
-}
+};
 
-const createNewBudget = async (req,res) =>{
-    try{
-        const {totalBudget, budgetType, userId} = req.body;
-        if(!totalBudget || !budgetType || !userId){
-            return res.status(400).json({message : "Please provide all required fields"});
+const saveBudget = async (req, res) => {
+    try {
+        const totalBudget = Number(req.body.totalBudget);
+        if (!Number.isFinite(totalBudget) || totalBudget <= 0) {
+            return res.status(400).json({ message: "Monthly budget must be greater than zero" });
         }
-        const newBudget = new Budget({
-            totalBudget,
-            budgetType,
-            user : userId
-        }, {timestamps : true});
-        if(!newBudget){
-            return res.status(400).json({message : "Budget not created"});
-        }
-        await newBudget.save();
-        res.status(201).json({message : "Budget created successfully", budget : newBudget});
-    } catch(error){
-        console.log(error);
-        res.status(500).json({message : "Something went wrong"});
+        const budget = await Budget.findOneAndUpdate(
+            { user: req.user.id, budgetType: "Monthly" },
+            { $set: { totalBudget, budgetType: "Monthly" }, $setOnInsert: { user: req.user.id } },
+            { new: true, upsert: true, runValidators: true }
+        );
+        return res.status(200).json({ budget });
+    } catch (error) {
+        console.error("Saving budget failed:", error);
+        return res.status(500).json({ message: "Unable to save budget" });
     }
-}
+};
 
-const editBudget = async (req, res) =>{
-    try{
-        const budgetId =  req.params.id;
-        if(!budgetId){
-            return res.status(400).json({message : "Please provide budget id"});
-        }
-        const budgetExists = await Budget.findById(budgetId);
-        if(!budgetExists){
-            return res.status(404).json({message : "Budget not Found"});
-        }
-        const {totalBudget, budgetType, userId, spentAmount} = req.body;
-        if(!totalBudget || !budgetType || !userId){
-            return res.status(400).json({message : "Please provide all required fields"});
-        }
-        const updatedBudget =  await Budget.findByIdAndUpdate(budgetId, {
-            totalBudget,
-            budgetType,
-            user : userId,
-            spentAmount
-        }, {new : true});
-        if(!updatedBudget){
-            return res.status(400).json({message : "Budget not updated"});
-        }
-        res.status(200).json({message : "Budget updated successfully", budget : updatedBudget});
-    } catch(error){
-        console.log(error);
-        res.status(500).json({message : "Something went wrong"});
-    }
-}
-
-const deleteBudget = async (req, res) =>{
-    try{
-        const budgetId = req.params.id;
-        const userId = req.body;
-        if(!budgetId){
-            return res.status(400).json({message : "Please provide budget id"});
-        }
-        const budgetExists = await Budget.findById(budgetId);
-        if(!budgetExists){
-            return res.status(404).json({message : "Budget not Found"});
-        }
-        if(budgetExists.user.toString() !== userId){
-            return res.status(403).json({message : "You are not authorized to delete this budget"});
-        }
-        const deletedBudget = await Budget.findByIdAndDelete(budgetId);
-        if(!deletedBudget){
-            return res.status(400).json({message : "Budget not deleted"});
-        }
-        res.status(200).json({message : "Budget deleted successfully", budget : deletedBudget});
-    } catch(error){
-        console.log(error);
-        res.status(500).json({message : "Something went wrong"});
-    }
-}
-
-
-module.exports = {infoBudget, createNewBudget, editBudget, deleteBudget};
+module.exports = { infoBudget, saveBudget };

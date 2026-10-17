@@ -1,13 +1,21 @@
-import { ArrowUpRight, LayoutDashboard, Sparkles, Wallet } from "lucide-react";
+import { ArrowUpRight, LayoutDashboard, LogOut, Sparkles, Wallet } from "lucide-react";
 
 const links = [
   { label: "Overview", href: "#overview", icon: LayoutDashboard },
   { label: "Transactions", href: "#transactions", icon: Wallet },
   { label: "Budgets", href: "#budgets", icon: Wallet },
   { label: "Insights", href: "#insights", icon: Sparkles },
+  { label: "AI adviser", href: "#adviser", icon: Sparkles },
 ];
 
-function DashboardSidebar() {
+function DashboardSidebar({ user, onLogout }) {
+  const initials = user?.username
+    ?.split(/\s+/)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase() || "PW";
+
   return (
     <aside className="flex shrink-0 flex-col border-b border-slate-200 bg-white px-4 py-4 lg:sticky lg:top-0 lg:h-screen lg:w-64 lg:border-b-0 lg:border-r lg:px-5 lg:py-6">
       <a href="#overview" className="flex w-fit items-center gap-2.5 rounded-lg text-xl font-bold tracking-tight text-slate-950 focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -43,8 +51,9 @@ function DashboardSidebar() {
           </a>
         </div>
         <div className="mt-5 flex items-center gap-3 border-t border-slate-100 pt-5">
-          <div className="flex size-9 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">AM</div>
-          <div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-800">Alex Morgan</p><p className="text-xs text-slate-400">Personal account</p></div>
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">{initials}</div>
+          <div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold text-slate-800">{user?.username || "Your account"}</p><p className="truncate text-xs text-slate-400">{user?.email || "Personal account"}</p></div>
+          <button type="button" onClick={onLogout} aria-label="Sign out" title="Sign out" className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"><LogOut size={16} /></button>
         </div>
       </div>
     </aside>

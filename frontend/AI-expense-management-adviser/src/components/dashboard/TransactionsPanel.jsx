@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowDownToLine, ArrowUpRight, Search, X } from "lucide-react";
+import { ArrowDownToLine, ArrowUpRight, Pencil, Search, Trash2, X } from "lucide-react";
 import { categories, categoryStyles, currency } from "./dashboardData";
 
 function formatDate(value) {
@@ -20,6 +20,8 @@ function TransactionsPanel({
   onCategoryChange,
   onExport,
   onClearFilters,
+  onEditExpense,
+  onDeleteExpense,
 }) {
   const [showAll, setShowAll] = useState(false);
   const visibleExpenses = showAll ? expenses : expenses.slice(0, 7);
@@ -49,15 +51,15 @@ function TransactionsPanel({
       </div>
 
       <div className="mt-4 overflow-hidden">
-        <div className="hidden grid-cols-[minmax(0,1.6fr)_minmax(90px,0.8fr)_minmax(90px,0.7fr)_auto] gap-3 border-b border-slate-100 px-2 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 sm:grid">
-          <span>Merchant</span><span>Category</span><span>Date</span><span className="text-right">Amount</span>
+        <div className="hidden grid-cols-[minmax(0,1.6fr)_minmax(76px,0.7fr)_minmax(88px,0.75fr)_minmax(88px,auto)_64px] gap-3 border-b border-slate-100 px-2 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 sm:grid">
+          <span>Merchant</span><span>Category</span><span>Date</span><span className="text-right">Amount</span><span />
         </div>
         {visibleExpenses.map((expense) => {
           const category = categories.find(({ name }) => name === expense.category) || categories[0];
           const Icon = category.icon;
           const style = categoryStyles[category.tone];
           return (
-            <div key={expense.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 border-b border-slate-100 px-1 py-3.5 last:border-b-0 sm:grid-cols-[minmax(0,1.6fr)_minmax(90px,0.8fr)_minmax(90px,0.7fr)_auto] sm:gap-3 sm:px-2">
+            <div key={expense.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 border-b border-slate-100 px-1 py-3.5 last:border-b-0 sm:grid-cols-[minmax(0,1.6fr)_minmax(76px,0.7fr)_minmax(88px,0.75fr)_minmax(88px,auto)_64px] sm:gap-3 sm:px-2">
               <div className="flex min-w-0 items-center gap-3">
                 <span className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${style.icon}`}><Icon size={16} /></span>
                 <span className="min-w-0"><strong className="block truncate text-sm font-semibold text-slate-800">{expense.name}</strong><span className="block truncate text-xs text-slate-400">{expense.note || "Personal expense"}</span></span>
@@ -65,6 +67,10 @@ function TransactionsPanel({
               <span className={`hidden w-fit rounded-full px-2.5 py-1 text-[11px] font-medium sm:inline-flex ${style.badge}`}>{expense.category}</span>
               <span className="hidden text-xs text-slate-500 sm:block">{formatDate(expense.date)}</span>
               <span className="text-right text-sm font-semibold text-slate-800">−{currency(Number(expense.amount))}<span className="mt-1 block text-[11px] font-normal text-slate-400 sm:hidden">{formatDate(expense.date)}</span></span>
+              <span className="col-start-2 row-start-2 flex items-center justify-end gap-1 sm:col-start-5 sm:row-start-1">
+                <button type="button" onClick={() => onEditExpense(expense)} aria-label={`Edit ${expense.name}`} title="Edit expense" className="rounded-lg p-1.5 text-slate-400 hover:bg-indigo-50 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"><Pencil size={14} /></button>
+                <button type="button" onClick={() => onDeleteExpense(expense)} aria-label={`Delete ${expense.name}`} title="Delete expense" className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-300"><Trash2 size={14} /></button>
+              </span>
               <span className={`col-start-1 w-fit rounded-full px-2 py-0.5 text-[10px] font-medium sm:hidden ${style.badge}`}>{expense.category}</span>
             </div>
           );
@@ -82,8 +88,8 @@ function TransactionsPanel({
       {expenses.length > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4 text-xs text-slate-400">
           <span>Showing <strong className="font-semibold text-slate-600">{visibleExpenses.length}</strong> of <strong className="font-semibold text-slate-600">{expenses.length}</strong> transactions</span>
-          <button type="button" onClick={showAll ? () => setShowAll(false) : onExport} className="inline-flex items-center gap-1 font-semibold text-indigo-600 hover:text-indigo-800">
-            {showAll ? "Show recent" : "Download full report"} <ArrowUpRight size={13} />
+          <button type="button" onClick={() => setShowAll((current) => !current)} className="inline-flex items-center gap-1 font-semibold text-indigo-600 hover:text-indigo-800">
+            {showAll ? "Show recent" : "Show all transactions"} <ArrowUpRight size={13} />
           </button>
         </div>
       )}

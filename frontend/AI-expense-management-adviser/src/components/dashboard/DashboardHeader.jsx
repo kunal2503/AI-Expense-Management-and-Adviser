@@ -1,6 +1,7 @@
-import { Bell, ChevronRight } from "lucide-react";
+import { Bell, ChevronRight, LogOut } from "lucide-react";
+import toast from "react-hot-toast";
 
-function DashboardHeader() {
+function DashboardHeader({ onLogout }) {
   const today = new Date();
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200/80 bg-white/90 px-4 backdrop-blur-xl sm:px-6 lg:px-10">
@@ -12,9 +13,10 @@ function DashboardHeader() {
           {today.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" })}
         </span>
         <span className="hidden h-6 w-px bg-slate-200 sm:block" />
-        <button type="button" aria-label="Notifications" title="You're all caught up" className="relative flex size-9 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <Bell size={18} /><span className="absolute right-2 top-2 size-2 rounded-full border-2 border-white bg-indigo-500" />
+        <button type="button" onClick={() => toast("You’re all caught up")} aria-label="Notifications" title="Notifications" className="relative flex size-9 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <Bell size={18} />
         </button>
+        <button type="button" onClick={onLogout} aria-label="Sign out" title="Sign out" className="flex size-9 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 lg:hidden"><LogOut size={17} /></button>
       </div>
     </header>
   );

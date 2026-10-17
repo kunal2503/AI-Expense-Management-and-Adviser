@@ -1,6 +1,6 @@
 import { useState} from "react";
 import axiosInstance from "../../utils/axiosInstance";
-import {useNavigate} from "react-router";
+import { Link, useNavigate } from "react-router";
 import toast from "react-hot-toast";
 
 const Signup = () => {
@@ -23,13 +23,13 @@ const Signup = () => {
       e.preventDefault();
       const response = await axiosInstance.post("/auth/signup",userData);
       if(response.status === 201){
-        navigate("/dashboard");
         localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        navigate("/dashboard", { replace: true });
         toast.success("Signup successful!");
       }
     } catch(error){
-      console.log("Error while signing up: ", error);
-      toast.error("Error while signing up");
+      toast.error(error.response?.data?.message || "Unable to create your account. Please try again.");
     }
   }
   
@@ -44,21 +44,21 @@ const Signup = () => {
         <form className="flex flex-col gap-[18px]" onSubmit={handleSubmit}>
           <label className="flex flex-col gap-2 text-sm font-semibold">
             Full name
-            <input className="box-border w-full rounded-lg border border-[#d8dee8] px-3.5 py-3 text-sm text-[#182230] outline-none" type="text" name="username" placeholder="Alex Morgan" onChange={handleInputChanges} value={userData.username}/>
+            <input className="box-border w-full rounded-lg border border-[#d8dee8] px-3.5 py-3 text-sm text-[#182230] outline-none" type="text" name="username" placeholder="Alex Morgan" onChange={handleInputChanges} value={userData.username} minLength={2} maxLength={60} required/>
           </label>
           <label className="flex flex-col gap-2 text-sm font-semibold">
             Email address
-            <input className="box-border w-full rounded-lg border border-[#d8dee8] px-3.5 py-3 text-sm text-[#182230] outline-none" type="email" name="email" placeholder="alex@example.com" onChange={handleInputChanges} value={userData.email}/>
+            <input className="box-border w-full rounded-lg border border-[#d8dee8] px-3.5 py-3 text-sm text-[#182230] outline-none" type="email" name="email" placeholder="alex@example.com" onChange={handleInputChanges} value={userData.email} required/>
           </label>
           <label className="flex flex-col gap-2 text-sm font-semibold">
             Password
-            <input className="box-border w-full rounded-lg border border-[#d8dee8] px-3.5 py-3 text-sm text-[#182230] outline-none" type="password" name="password" placeholder="Create a password" onChange={handleInputChanges} value={userData.password} />
+            <input className="box-border w-full rounded-lg border border-[#d8dee8] px-3.5 py-3 text-sm text-[#182230] outline-none" type="password" name="password" placeholder="Create a password" onChange={handleInputChanges} value={userData.password} minLength={8} required/>
           </label>
           <button className="mt-1.5 cursor-pointer rounded-lg border-0 bg-blue-600 p-[13px] text-[15px] font-semibold text-white" type="submit">Create account</button>
         </form>
 
         <p className="my-0 mt-6 text-center text-sm text-[#667085]">
-          Already have an account? <a className="font-semibold text-blue-600 no-underline" href="/login">Log in</a>
+          Already have an account? <Link className="font-semibold text-blue-600 no-underline" to="/signin">Log in</Link>
         </p>
       </section>
     </main>
